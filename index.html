@@ -24,7 +24,9 @@ p{color:#9aa2b3;max-width:340px;margin:6px 0}
   function say(t) { document.getElementById('msg').textContent = t; var s = document.getElementById('sp'); if (s) s.style.display = 'none'; }
   function b64(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; }
   function te(s) { return new TextEncoder().encode(s); }
-  var m = location.hash.match(/k=([A-Za-z0-9_-]{20,})/), k = m ? m[1] : null;
+  var q = location.search.match(/[?&]k=([A-Za-z0-9_-]{20,})/), m = location.hash.match(/k=([A-Za-z0-9_-]{20,})/), k = q ? q[1] : (m ? m[1] : null);
+  // Keep the key in the address itself, so Add to Home Screen keeps it (iPhone drops the # part)
+  if (m && !q) { try { history.replaceState(null, '', location.pathname + '?k=' + m[1]); } catch (e) {} }
   try { if (k) localStorage.setItem('jc.phoneKey', k); else k = localStorage.getItem('jc.phoneKey'); } catch (e) {}
   if (!k) { say('This page needs the private link from your PC. On the PC, open Job Centre, click the phone button and scan the QR code.'); return; }
   if (!window.crypto || !crypto.subtle || !window.DecompressionStream) { say('Please update iOS (16.4 or later) to open Job Centre.'); return; }
